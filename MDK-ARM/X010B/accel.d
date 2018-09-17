@@ -35,3 +35,4 @@ x010b\accel.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rtc_ex.h
 x010b\accel.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h
 x010b\accel.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h
 x010b\accel.o: ../Inc/accel.h
+x010b\accel.o: ../Inc/i2c.h

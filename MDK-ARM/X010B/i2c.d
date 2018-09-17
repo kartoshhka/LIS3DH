@@ -1,5 +1,5 @@
-x010b\i2c.o: ..\Drivers\efa_lib_v2\src\I2C.c
-x010b\i2c.o: ..\Drivers\efa_lib_v2\inc\I2C.h
+x010b\i2c.o: ../Src/i2c.c
+x010b\i2c.o: ../Inc/i2c.h
 x010b\i2c.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h
 x010b\i2c.o: ../Inc/stm32l4xx_hal_conf.h
 x010b\i2c.o: ../Inc/main.h
@@ -35,3 +35,4 @@ x010b\i2c.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rtc.h
 x010b\i2c.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rtc_ex.h
 x010b\i2c.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h
 x010b\i2c.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h
+x010b\i2c.o: ../Inc/gpio.h

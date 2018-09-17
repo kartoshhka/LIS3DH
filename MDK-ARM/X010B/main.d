@@ -35,4 +35,9 @@ x010b\main.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rtc.h
 x010b\main.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rtc_ex.h
 x010b\main.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h
 x010b\main.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h
+x010b\main.o: ../Inc/can.h
+x010b\main.o: ../Inc/i2c.h
+x010b\main.o: ../Inc/rtc.h
+x010b\main.o: ../Inc/tim.h
+x010b\main.o: ../Inc/gpio.h
 x010b\main.o: ../Inc/accel.h

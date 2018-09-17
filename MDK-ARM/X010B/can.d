@@ -1,8 +1,9 @@
-x010b\can.o: ..\Src\can.c
+x010b\can.o: ../Src/can.c
 x010b\can.o: ../Inc/can.h
 x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h
 x010b\can.o: ../Inc/stm32l4xx_hal_conf.h
 x010b\can.o: ../Inc/main.h
+x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h
 x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h
 x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_def.h
 x010b\can.o: ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l4xx.h
@@ -14,7 +15,6 @@ x010b\can.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 x010b\can.o: ../Drivers/CMSIS/Include/core_cmFunc.h
 x010b\can.o: ../Drivers/CMSIS/Include/core_cmSimd.h
 x010b\can.o: ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/system_stm32l4xx.h
-x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h
 x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
 x010b\can.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc_ex.h
@@ -35,3 +35,4 @@ x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rtc.h
 x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rtc_ex.h
 x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h
 x010b\can.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h
+x010b\can.o: ../Inc/gpio.h

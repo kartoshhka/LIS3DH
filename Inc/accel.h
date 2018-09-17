@@ -2,9 +2,10 @@
 #define ACCEL_H_
 
 #include "stm32l4xx_hal.h"
-#define __ACCEL_ADDR										((uint8_t)0x32)
-#define __ACCEL_REG_ID_ADDR 						((uint8_t)0x0F)
-#define __ACCEL_ID 											((uint8_t)0x33)
+
+#define __ACCEL_ADDR										0x30
+#define __ACCEL_REG_ID_ADDR 						0x0F
+#define __ACCEL_ID 											0x33
 
 #define __ACCEL_NORMAL_MODE     				((uint8_t)0x00)
 #define __ACCEL_LOWPOWER_MODE   				((uint8_t)0x08)
@@ -72,6 +73,10 @@
 #define __ACCEL_OUT_Y_H_A               0x2B  /* Output Register Y acceleration */
 #define __ACCEL_OUT_Z_L_A               0x2C  /* Output Register Z acceleration */
 #define __ACCEL_OUT_Z_H_A               0x2D  /* Output Register Z acceleration */
+
+extern int16_t xval;
+extern int16_t yval;
+extern int16_t zval;
 
 void Accel_Global_Init(void);
 void Accel_ReadAcc(void);
