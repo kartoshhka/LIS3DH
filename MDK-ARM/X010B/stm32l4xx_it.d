@@ -35,3 +35,4 @@ x010b\stm32l4xx_it.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rtc_ex.h
 x010b\stm32l4xx_it.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h
 x010b\stm32l4xx_it.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h
 x010b\stm32l4xx_it.o: ../Inc/stm32l4xx_it.h
+x010b\stm32l4xx_it.o: ../Inc/sensors.h

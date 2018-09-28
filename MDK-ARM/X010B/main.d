@@ -41,3 +41,4 @@ x010b\main.o: ../Inc/rtc.h
 x010b\main.o: ../Inc/tim.h
 x010b\main.o: ../Inc/gpio.h
 x010b\main.o: ../Inc/accel.h
+x010b\main.o: ../Inc/sensors.h

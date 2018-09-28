@@ -373,7 +373,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32L432xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;         ../Drivers/STM32L4xx_HAL_Driver/Inc;         ../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy;         ../Drivers/CMSIS/Device/ST/STM32L4xx/Include;         ../Drivers/CMSIS/Include;         ..\Drivers\efa_lib_v2\inc</IncludePath>
+              <IncludePath>../Inc;                  ../Drivers/STM32L4xx_HAL_Driver/Inc;                  ../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy;                  ../Drivers/CMSIS/Device/ST/STM32L4xx/Include;                  ../Drivers/CMSIS/Include;                  ..\Drivers\efa_lib_v2\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -430,6 +430,11 @@
               <FileName>accel.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\accel.c</FilePath>
+            </File>
+            <File>
+              <FileName>sensors.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\sensors.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -585,13 +590,6 @@
         </Group>
         <Group>
           <GroupName>Application/Lib</GroupName>
-          <Files>
-            <File>
-              <FileName>I2C.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\efa_lib_v2\src\I2C.c</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>

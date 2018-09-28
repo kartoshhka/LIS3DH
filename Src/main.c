@@ -47,6 +47,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "accel.h"
+#include "sensors.h"
 
 /* USER CODE END Includes */
 
@@ -54,6 +55,9 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+#define I2Cx            I2C1
+uint8_t recieved_data;
+uint8_t write_data;
 
 /* USER CODE END PV */
 
@@ -62,7 +66,50 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+static void I2C_TEST()
+{
+	uint8_t NBYTES = 1;
+	
+	I2C1->CR2 &=~ I2C_CR2_NBYTES;
+	I2C1->CR2 &=~ I2C_CR2_SADD;
+	I2C1->CR2 |= __ACCEL_ADDR_WRITE;
+	I2C1->CR2 |= (NBYTES<<16); //NBYTES (1 byte)
+	I2C1->CR2 &=~ I2C_CR2_RD_WRN; //write
+	
+	I2C1->ISR =0xFFFFFFFF;
+	I2C1->CR2 |= I2C_CR2_START;
+	
+	while(I2C1->ISR & I2C_ISR_NACKF)
+	{
+	}
+	
+	while (!(I2C1->ISR & I2C_ISR_TXIS)) //Transmit interrupt
+	{
+	}
+	
+	I2C1->TXDR=__ACCEL_CTRL_REG1;
+	
+	while (I2C1->ISR & I2C_ISR_TC) //Transfer complete
+	{
+	}
+	I2C1->CR2 &=~ I2C_CR2_SADD;
+	I2C1->CR2 &=~ I2C_CR2_RD_WRN;
+	I2C1->CR2 |= __ACCEL_ADDR_READ;
+	I2C1->CR2 |= I2C_CR2_RD_WRN; //read
+	//I2C1->ISR =0xFFFFFFFF;
+	
+	I2C1->CR2 |= I2C_CR2_START;		
+	
+	while(!(I2C1->ISR & I2C_ISR_RXNE))
+	{
+	}
+	recieved_data = I2C1->RXDR;
+	
+	while (I2C1->ISR & I2C_ISR_TC) //Transfer complete
+	{
+	}
+	I2C1->CR2 |= I2C_CR2_STOP;
+}
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -102,18 +149,63 @@ int main(void)
   MX_CAN1_Init();
   MX_I2C1_Init();
   MX_TIM2_Init();
- // MX_RTC_Init();
- // MX_TIM6_Init();
+  MX_RTC_Init();
+  MX_TIM16_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
 	
+	TIM16->DIER |= TIM_DIER_UIE;
+	TIM16->CR1 |= TIM_CR1_CEN;
+	
+//	TIM7->DIER |= TIM_DIER_UIE;
+//	TIM7->CR1 |= TIM_CR1_CEN;
+	
+	TIM2->CCER |= TIM_CCER_CC1E|TIM_CCER_CC2E|TIM_CCER_CC3E|TIM_CCER_CC4E;
+  TIM2->CR1 |= TIM_CR1_CEN;
+	
+	/*write_data = __ACCEL_NORMAL_MODE | __ACCEL_ODR_50_HZ | __ACCEL_AXES_ENABLE;
+	uint8_t NBYTES = 2;
+	(void)I2C1->ICR;
+	(void)I2C1->CR2; 
+	
+	I2C1->CR2 |= __ACCEL_ADDR_WRITE;	
+	I2C1->CR2 |= (NBYTES<<16);
+	I2C1->CR2 &=~ I2C_CR2_RD_WRN;
+	
+	I2C1->TXDR = __ACCEL_CTRL_REG1;
+	I2C1->CR2 |= I2C_CR2_START;
+	
+	while(I2C1->ISR & I2C_ISR_NACKF)
+	{
+	}
+	while (!(I2C1->ISR & I2C_ISR_TXIS)) //Transmit interrupt
+	{
+	}		
+
+	I2C1->TXDR = write_data;
+
+	while (I2C1->ISR & I2C_ISR_TC) //Transfer complete
+	{
+	}
+
+	I2C1->CR2 |= I2C_CR2_STOP;
+	
+	I2C_TEST();*/
 	Accel_Global_Init();
+	NVIC_SetPriority (EXTI9_5_IRQn, 2);
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 Accel_ReadAcc();
+		
+	 //Accel_ReadAcc();
+		/*if (Signal_Count)
+		{
+			Sonar_Get();
+		}*/
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -142,12 +234,8 @@ void SystemClock_Config(void)
 
     /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI
-                              |RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_MSI;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = 16;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = 0;
   RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_11;
@@ -172,8 +260,8 @@ void SystemClock_Config(void)
   }
 
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_I2C1;
-  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_HSI;
-  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
+  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_SYSCLK;
+  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);

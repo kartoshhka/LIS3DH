@@ -36,10 +36,71 @@
 #include "stm32l4xx_it.h"
 
 /* USER CODE BEGIN 0 */
+#include "sensors.h"
+uint32_t Timing;
+uint32_t Period = 1020;//100000;
+uint8_t Fire = 1;
+uint8_t AutoOff;
+uint8_t Length = 48;
+uint8_t Order;
+uint16_t Blanking = 72;
 
+uint16_t Sonar_Front;
+uint16_t Sonar_Front_Prev;
+uint16_t Sonar_Front_First;
+uint16_t Distance_Bw_Fronts;
+uint16_t Num_Of_Corr_Fronts;
+
+uint8_t Disable_EXTI_IR_for_SNSRs;
+
+uint8_t num_of_sensor;
+
+void GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	switch (GPIO_Pin)
+	{
+		case GPIO_PIN_5:
+			num_of_sensor |= 1<<0;
+		break;
+		case GPIO_PIN_6:
+			num_of_sensor |= 1<<1;
+		break;
+		case GPIO_PIN_7:
+			num_of_sensor |= 1<<2;
+		break;
+		case GPIO_PIN_8:
+			num_of_sensor |= 1<<3;
+		break;
+	}
+	/*Code for Timing*/
+	Sonar_Front_Prev = Sonar_Front;
+	Sonar_Front = Timing;
+	Distance_Bw_Fronts = Sonar_Front - Sonar_Front_Prev;
+	if ((Distance_Bw_Fronts > 10) && (Signal_Count < 20)) //probably new pack of impulses or noise
+	{
+		Signal_Count = 0; //reset if noise
+		Sonar_Front_First = Timing;
+		Signal_Count++;
+	}
+	else
+		Signal_Count++;
+	
+	if (Signal_Count > 20)
+	{
+		Num_Of_Corr_Fronts = Signal_Count;
+		Sonar_Reading = Sonar_Front_First;
+		Sonar_Get();
+	}
+	
+	/*Code for TIM7 - add FALLING*/
+	/**/
+
+}
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern TIM_HandleTypeDef htim7;
+extern TIM_HandleTypeDef htim16;
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
@@ -211,15 +272,120 @@ void EXTI4_IRQHandler(void)
 void EXTI9_5_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
+	if (EXTI->PR1 & EXTI_PR1_PIF5)
+	{
+		EXTI->PR1 |= EXTI_PR1_PIF5;
+		GPIO_EXTI_Callback(GPIO_PIN_5);
+	}
+	if (EXTI->PR1 & EXTI_PR1_PIF6)
+	{
+		EXTI->PR1 |= EXTI_PR1_PIF6;
+		GPIO_EXTI_Callback(GPIO_PIN_6);
+	}
+	if (EXTI->PR1 & EXTI_PR1_PIF7)
+	{
+		EXTI->PR1 |= EXTI_PR1_PIF7;
+		GPIO_EXTI_Callback(GPIO_PIN_7);
+	}
+	if (EXTI->PR1 & EXTI_PR1_PIF8)
+	{
+		EXTI->PR1 |= EXTI_PR1_PIF8;
+		GPIO_EXTI_Callback(GPIO_PIN_8);
+	}
+	else
+		num_of_sensor=0;
+	
   /* USER CODE END EXTI9_5_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
+
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
   /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
+/**
+* @brief This function handles TIM1 update interrupt and TIM16 global interrupt.
+*/
+void TIM1_UP_TIM16_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
+	TIM16->SR &=~TIM_SR_UIF;
+	uint8_t i = 0;
+	if (Fire && Timing == 0) {
+		switch (Order) {
+			case 0:
+				TIM2->CCR1 = 1080/2;//1180/2;
+			break;
+			case 1:
+				TIM2->CCR2 = 1080/2;//1180/2;
+			break;
+			case 2:
+				TIM2->CCR3 = 1080/2;//1180/2;
+			break;
+			case 3:
+				TIM2->CCR4 = 1080/2;//1180/2;
+			break;
+		}
+		if (AutoOff) Fire = 0;
+	}
+	if (Timing > Length) {
+		TIM2->CCR1 = 0;
+		TIM2->CCR2 = 0;
+		TIM2->CCR3 = 0;
+		TIM2->CCR4 = 0;
+		Order++;
+		if (Order == 4) Order = 0;
+	}
+	if (Timing > Length+Blanking)
+	{
+		EXTI->IMR1 |= (EXTI_IMR1_IM5 |  EXTI_IMR1_IM6 |  EXTI_IMR1_IM7 | EXTI_IMR1_IM8);
+		if (Disable_EXTI_IR_for_SNSRs)
+		{
+			if ((1<<0) & Disable_EXTI_IR_for_SNSRs)
+			{
+				EXTI->IMR1 &=~ EXTI_IMR1_IM5;
+			}
+			if ((1<<1) & Disable_EXTI_IR_for_SNSRs)
+			{
+				EXTI->IMR1 &=~ EXTI_IMR1_IM6;
+			}
+			if ((1<<2) & Disable_EXTI_IR_for_SNSRs)
+			{
+				EXTI->IMR1 &=~ EXTI_IMR1_IM7;
+			}
+			if ((1<<3) & Disable_EXTI_IR_for_SNSRs)
+			{
+				EXTI->IMR1 &=~ EXTI_IMR1_IM8;
+			}
+		}
+	}
+	Timing++;
+	if (Timing == Period) 
+	{
+		Timing = 0;
+		EXTI->IMR1 &=~ (EXTI_IMR1_IM5 |  EXTI_IMR1_IM6 |  EXTI_IMR1_IM7 | EXTI_IMR1_IM8);
+		Signal_Count = 0;
+		Sonar_Front_First = 0;
+		Sonar_Front_Prev = 0;
+		Sonar_Front = 0;
+	}
+  /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
+
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 1 */
+
+  /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
+}
+
+/**
+* @brief This function handles TIM7 global interrupt.
+*/
+void TIM7_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM7_IRQn 0 */
+	TIM7->SR &=~TIM_SR_UIF;
+  /* USER CODE END TIM7_IRQn 0 */
+  /* USER CODE BEGIN TIM7_IRQn 1 */
+
+  /* USER CODE END TIM7_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
