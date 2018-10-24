@@ -1,0 +1,3 @@
+[submodule "Drivers/efa_lib_v2"]
+	path = Drivers/efa_lib_v2
+	url = https://bms@scm.efamedica.ru/scm/git/efa_lib_v2
